@@ -1,0 +1,11 @@
+*
+!*.*
+*.o
+*.hi
+*.tmp
+!src/
+!src/*.hs
+
+!TODO
+!README
+!LICENSE
