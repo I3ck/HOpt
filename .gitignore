@@ -5,6 +5,8 @@
 *.tmp
 !src/
 !src/*.hs
+!src/HOpt/
+!src/HOpt/*.hs
 
 !TODO
 !README
