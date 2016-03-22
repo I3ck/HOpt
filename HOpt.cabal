@@ -20,6 +20,7 @@ library
     HOpt.Datas
     HOpt.Instances
     HOpt.Types
+    HOpt.Base
     HOpt.SimulatedAnnealing
   -- other-modules:
   -- other-extensions:
