@@ -26,8 +26,8 @@ chunkParMap chunkSize f l = concat $ parMap rpar (map f) (chunksOf chunkSize l)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-makeMulti :: SAparams -> Int -> Int -> Int -> SAMultiParams
-makeMulti saParams chunkSize nSplits splitId = saMultiParams
+makeMulti :: SAparams -> Int -> Int -> SAMultiParams ---TODO reorder
+makeMulti saParams chunkSize nSplits = saMultiParams
   where
     saMultiParams = SAMultiParams
         { saParams = saParams
