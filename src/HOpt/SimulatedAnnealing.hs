@@ -54,7 +54,9 @@ splitSingle multi = map fromSingle (splitRanges multi)
 --------------------------------------------------------------------------------
 
 simulAnnealMulti :: SAMultiParams -> OptResult
-simulAnnealMulti multi = minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
+simulAnnealMulti multi = case (target $ saParams multi) of
+    Minimize -> minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
+    Maximize -> maximum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
 
 --------------------------------------------------------------------------------
 
