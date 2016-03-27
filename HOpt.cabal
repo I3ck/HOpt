@@ -16,6 +16,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
+  ghc-options:         -O2 -threaded -W -fwarn-incomplete-patterns
   exposed-modules:
     HOpt.Datas
     HOpt.Instances
@@ -26,6 +27,8 @@ library
   -- other-extensions:
   build-depends:
     base >=4.8 && <4.9,
-    random
+    random,
+    split,
+    parallel
   hs-source-dirs:      src
   default-language:    Haskell2010

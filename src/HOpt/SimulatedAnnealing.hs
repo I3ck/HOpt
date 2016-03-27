@@ -7,6 +7,48 @@ import HOpt.Base
 
 import System.Random
 
+---TODO block defined both in H2d and hopt, maybe define in own project?
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+import Data.List.Split (chunksOf)
+import Control.Parallel.Strategies (runEval, rpar, parMap)
+
+--------------------------------------------------------------------------------
+
+chunkParMap :: Int -> (a -> b) -> [a] -> [b]
+chunkParMap chunkSize f l = concat $ parMap rpar (map f) (chunksOf chunkSize l)
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+makeMulti :: SAparams -> Int -> Int -> SAMultiParams
+makeMulti saParams nSplits splitId = saMultiParams
+  where
+    saMultiParams = SAMultiParams
+        { saParams = saParams
+        , splitRanges = newRanges
+        }
+
+    newRanges = map splitRange (ranges saParams)
+
+    splitRange :: Range -> [Range]
+    splitRange r = rs
+      where
+        rs = zip minVals maxVals
+        minVals = [(fst r)            , (fst r) + increment      , (snd r) - increment]
+        maxVals = [(fst r) + increment, (fst r) + 2.0 * increment, (snd r)]
+        increment = ((snd r) - (fst r)) / fromIntegral nSplits
+
+
+
+--simulAnnealMulti :: SAMultiParams -> OptResult
+
+
 --------------------------------------------------------------------------------
 
 simulAnneal :: SAparams -> OptResult

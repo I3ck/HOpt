@@ -15,6 +15,11 @@ data SAparams = SAparams
     , callback      :: OptParams -> OptResult
     }
 
+data SAMultiParams = SAMultiParams
+    { saParams :: SAparams
+    , splitRanges :: [[Range]]
+    }
+
 --------------------------------------------------------------------------------
 
 data OptResult = OptResult
