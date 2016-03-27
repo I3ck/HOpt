@@ -16,8 +16,9 @@ data SAparams = SAparams
     }
 
 data SAMultiParams = SAMultiParams
-    { saParams :: SAparams
-    , splitRanges :: [[Range]]
+    { saParams      :: SAparams
+    , splitRanges   :: [[Range]]
+    , chunkSize     :: Int
     }
 
 --------------------------------------------------------------------------------

@@ -26,12 +26,13 @@ chunkParMap chunkSize f l = concat $ parMap rpar (map f) (chunksOf chunkSize l)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-makeMulti :: SAparams -> Int -> Int -> SAMultiParams
-makeMulti saParams nSplits splitId = saMultiParams
+makeMulti :: SAparams -> Int -> Int -> Int -> SAMultiParams
+makeMulti saParams chunkSize nSplits splitId = saMultiParams
   where
     saMultiParams = SAMultiParams
         { saParams = saParams
         , splitRanges = newRanges
+        , chunkSize = chunkSize
         }
 
     newRanges = map splitRange (ranges saParams)
@@ -44,10 +45,16 @@ makeMulti saParams nSplits splitId = saMultiParams
         maxVals = [(fst r) + increment, (fst r) + 2.0 * increment, (snd r)]
         increment = ((snd r) - (fst r)) / fromIntegral nSplits
 
+splitSingle :: SAMultiParams -> [SAparams] ---TODO might be best to directly create this list when creating the multi
+splitSingle multi = map fromSingle (splitRanges multi)
+  where
+    fromSingle :: [Range] -> SAparams
+    fromSingle rs = (saParams multi) { ranges = rs}
 
+--------------------------------------------------------------------------------
 
---simulAnnealMulti :: SAMultiParams -> OptResult
-
+simulAnnealMulti :: SAMultiParams -> OptResult
+simulAnnealMulti multi = minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
 
 --------------------------------------------------------------------------------
 
