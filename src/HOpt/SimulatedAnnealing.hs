@@ -35,15 +35,14 @@ makeMulti saParams chunkSize nSplits = saMultiParams
         , chunkSize = chunkSize
         }
 
-    newRanges = map splitRange (ranges saParams)
+    newRanges = map (splitRange nSplits) (ranges saParams)
 
-    splitRange :: Range -> [Range]
-    splitRange r = rs
-      where
-        rs = zip minVals maxVals
-        minVals = [(fst r)            , (fst r) + increment      , (snd r) - increment]
-        maxVals = [(fst r) + increment, (fst r) + 2.0 * increment, (snd r)]
-        increment = ((snd r) - (fst r)) / fromIntegral nSplits
+splitRange :: Int -> Range -> [Range]
+splitRange nSplits r = zip minVals maxVals
+  where
+    minVals   = [(fst r)            , (fst r) + increment      , (snd r) - increment]
+    maxVals   = [(fst r) + increment, (fst r) + 2.0 * increment, (snd r)]
+    increment = ((snd r) - (fst r)) / fromIntegral nSplits
 
 splitSingle :: SAMultiParams -> [SAparams] ---TODO might be best to directly create this list when creating the multi
 splitSingle multi = map fromSingle (splitRanges multi)
