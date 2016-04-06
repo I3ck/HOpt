@@ -5,6 +5,7 @@ import HOpt.Datas
 import HOpt.Instances
 import HOpt.Base
 
+import Data.List
 import System.Random
 
 ---TODO block defined both in H2d and hopt, maybe define in own project?
@@ -42,11 +43,13 @@ splitRange nSplits r = zip minVals maxVals
   where
     minVals   = [(fst r)            , (fst r) + increment      , (snd r) - increment]
     maxVals   = [(fst r) + increment, (fst r) + 2.0 * increment, (snd r)]
-    increment = ((snd r) - (fst r)) / fromIntegral nSplits
+    increment = ((snd r) - (fst r)) / fromIntegral nSplits --   TODO nSplits - 1 ?
 
 splitSingle :: SAMultiParams -> [SAparams] ---TODO might be best to directly create this list when creating the multi
-splitSingle multi = map fromSingle (splitRanges multi)
+splitSingle multi = map fromSingle transposed
   where
+    transposed = transpose (splitRanges multi)
+
     fromSingle :: [Range] -> SAparams
     fromSingle rs = (saParams multi) { ranges = rs}
 
