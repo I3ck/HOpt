@@ -15,6 +15,8 @@ data SAparams = SAparams
     , callback      :: OptParams -> OptResult
     }
 
+--------------------------------------------------------------------------------
+
 data SAMultiParams = SAMultiParams
     { saParams      :: SAparams
     , splitRanges   :: [[Range]]
@@ -30,5 +32,5 @@ data OptResult = OptResult
 
 --------------------------------------------------------------------------------
 
-data Target = Minimize
+data Target = Minimize ---TODO remove and make minimize only
             | Maximize
