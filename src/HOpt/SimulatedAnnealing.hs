@@ -6,6 +6,7 @@ import HOpt.Instances
 import HOpt.Base
 
 import Data.List
+import Data.Maybe
 import System.Random
 import Data.List.Split (chunksOf)
 import Control.Parallel.Strategies (runEval, rpar, parMap)
@@ -50,11 +51,11 @@ splitSingle multi = map fromSingle transposed
 --------------------------------------------------------------------------------
 
 simulAnnealMulti :: SAMultiParams -> OptResult
-simulAnnealMulti multi = minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
+simulAnnealMulti multi = minimum $ catMaybes $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
 
 --------------------------------------------------------------------------------
 
-simulAnneal :: SAparams -> OptResult
+simulAnneal :: SAparams -> Maybe OptResult
 simulAnneal params = simAnnealRecursion ((nCalculations params) - 1) randomNumbers initialResults (temperature params) (chance params) initialResult
   where
     initialResults    = [initialResult]
@@ -62,34 +63,35 @@ simulAnneal params = simAnnealRecursion ((nCalculations params) - 1) randomNumbe
     initialParams     = map centerRange (ranges params)
     randomNumbers     = randomRs (0.0 :: Double, 1.0 :: Double) (mkStdGen $ seed params)
 
-    simAnnealRecursion :: NCalculations -> [Double] -> [OptResult] -> Double -> Double -> OptResult -> OptResult
-    simAnnealRecursion nCalcLeft randNs previousResults temp chance prevBest
-        | nCalcLeft <= 0 = newBest
-        | otherwise      = simAnnealRecursion (nCalcLeft - 1) (tail randNs) newResults newTemp newChance newStart
-      where
-        lastResult = head previousResults
-        newTemp    = (coolingFactor params) * temp
-        newChance  = (coolingFactor params) * chance
-        newResults = (newResult : previousResults)
-        newStart   | (head randNs) < chance = lastResult
-                   | otherwise = newBest
-        newResult  = (callback params) newParams
-        newParams  = calcNewParams (tail randNs) prevBest
-        newBest    = min newResult prevBest
+    simAnnealRecursion :: NCalculations -> [Double] -> [OptResult] -> Double -> Double -> OptResult -> Maybe OptResult
+    simAnnealRecursion nCalcLeft randNs previousResults temp chance prevBest = case (maybeTail randNs, maybeHead previousResults, maybeHead randNs) of
+        (Just tailRndms, Just lastResult, Just rand)
+            | nCalcLeft <= 0 -> Just newBest
+            | otherwise      ->  simAnnealRecursion (nCalcLeft - 1) tailRndms newResults newTemp newChance newStart
+                  where
+                    newTemp    = (coolingFactor params) * temp
+                    newChance  = (coolingFactor params) * chance
+                    newResults = (newResult : previousResults)
+                    newStart   | rand < chance = lastResult
+                               | otherwise = newBest
+                    newResult  = (callback params) newParams
+                    newParams  = calcNewParams tailRndms prevBest
+                    newBest    = min newResult prevBest
 
-        calcNewParams :: [Double] -> OptResult -> OptParams
-        calcNewParams randNs center = newParams
-          where
-            newParams = map randomValidParam $ zip3 (ranges params) (inputs center) randNs
+                    calcNewParams :: [Double] -> OptResult -> OptParams
+                    calcNewParams randNs center = newParams
+                      where
+                        newParams = map randomValidParam $ zip3 (ranges params) (inputs center) randNs
 
-            randomValidParam (range, center, random) = randomParam
-              where
-                randomParam   = minTotal + random * delta
-                delta         = maxTotal - minTotal
-                maxTotal      = min maxR maxC
-                minTotal      = max minR minC
-                maxR          = snd range
-                minR          = fst range
-                maxC          = center + maxHalfLength
-                minC          = center - maxHalfLength
-                maxHalfLength = temp * centerRange range
+                        randomValidParam (range, center, random) = randomParam
+                          where
+                            randomParam   = minTotal + random * delta
+                            delta         = maxTotal - minTotal
+                            maxTotal      = min maxR maxC
+                            minTotal      = max minR minC
+                            maxR          = snd range
+                            minR          = fst range
+                            maxC          = center + maxHalfLength
+                            minC          = center - maxHalfLength
+                            maxHalfLength = temp * centerRange range
+        _ -> Nothing
