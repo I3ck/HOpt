@@ -10,7 +10,6 @@ data SAparams = SAparams
     , chance        :: Double
     , ranges        :: [Range]
     , seed          :: Int
-    , target        :: Target
     , nCalculations :: Int
     , callback      :: OptParams -> OptResult
     }
@@ -29,8 +28,3 @@ data OptResult = OptResult
     { inputs :: OptParams
     , result :: Double
     } deriving (Show)
-
---------------------------------------------------------------------------------
-
-data Target = Minimize ---TODO remove and make minimize only
-            | Maximize

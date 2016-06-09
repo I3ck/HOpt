@@ -50,9 +50,7 @@ splitSingle multi = map fromSingle transposed
 --------------------------------------------------------------------------------
 
 simulAnnealMulti :: SAMultiParams -> OptResult
-simulAnnealMulti multi = case (target $ saParams multi) of
-    Minimize -> minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
-    Maximize -> maximum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
+simulAnnealMulti multi = minimum $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
 
 --------------------------------------------------------------------------------
 
@@ -77,9 +75,7 @@ simulAnneal params = simAnnealRecursion ((nCalculations params) - 1) randomNumbe
                    | otherwise = newBest
         newResult  = (callback params) newParams
         newParams  = calcNewParams (tail randNs) prevBest
-        newBest    = case (target params) of
-            Minimize -> min newResult prevBest
-            Maximize -> max newResult prevBest
+        newBest    = min newResult prevBest
 
         calcNewParams :: [Double] -> OptResult -> OptParams
         calcNewParams randNs center = newParams
