@@ -51,11 +51,7 @@ splitSingle multi = map fromSingle transposed
 --------------------------------------------------------------------------------
 
 simulAnnealMulti :: SAMultiParams -> Maybe OptResult
-simulAnnealMulti multi = case results of
-    [] -> Nothing
-    x  -> Just $ minimum x
-  where
-    results = catMaybes $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
+simulAnnealMulti multi = maybeMinimum $ catMaybes $ chunkParMap (chunkSize multi) simulAnneal (splitSingle multi)
 
 --------------------------------------------------------------------------------
 

@@ -19,3 +19,9 @@ maybeTail :: [a] -> Maybe [a]
 maybeTail []  = Nothing
 maybeTail [_] = Nothing
 maybeTail (_:xs) = Just xs
+
+--------------------------------------------------------------------------------
+
+maybeMinimum :: (Ord a) => [a] -> Maybe a
+maybeMinimum [] = Nothing
+maybeMinimum x = Just $ minimum x
